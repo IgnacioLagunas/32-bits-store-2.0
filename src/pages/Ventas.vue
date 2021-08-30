@@ -2,11 +2,7 @@
   <div>
     <h1>Carrito de compras</h1>
 
-    <GameList
-      :list="$store.state.carrito"
-      :shoppingCart="true"
-      :colors="true"
-    ></GameList>
+    <GameList :list="$store.state.carrito" :shoppingCart="true"></GameList>
 
     <p v-if="!($store.getters.totalPrice === 0)">
       Total: ${{ $store.getters.totalPrice }}

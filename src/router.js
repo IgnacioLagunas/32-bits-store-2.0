@@ -22,9 +22,9 @@ export default new Router({
       component: () => import("./pages/Ventas.vue"),
     },
     {
-      path: "/404",
-      name: "404",
-      component: () => import("./pages/404.vue"),
+      path: "/agregarJuego",
+      name: "AgregarJuego",
+      component: () => import("./pages/AgregarJuego.vue"),
     },
   ],
 });

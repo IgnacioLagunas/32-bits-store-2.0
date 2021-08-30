@@ -12,11 +12,11 @@
       <router-link class="nav-link link" :to="{ path: '/busquedas' }"
         >Busquedas</router-link
       >
-      <router-link class="nav-link link" :to="{ path: '/ventas' }"
-        >Ventas</router-link
+      <router-link class="nav-link link" :to="{ path: '/agregarJuego' }"
+        >Agregar</router-link
       >
-      <router-link class="nav-link link" :to="{ path: '/404' }"
-        >Total</router-link
+      <router-link class="nav-link link" :to="{ path: '/ventas' }"
+        >Carrito</router-link
       >
     </ul>
   </nav>
@@ -35,6 +35,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    font-size: 0.8em;
   }
   .nav-logo {
     margin-left: 3rem;

@@ -30,7 +30,13 @@ const store = new Vuex.Store({
     totalPrice(state) {
       let total = 0;
       state.carrito.forEach((juego) => {
-        total += juego.precio * juego.stock;
+        if (juego.oferta) {
+          let precioOferta =
+            juego.precio - (juego.precio * juego.monto_oferta) / 100;
+          total += precioOferta * juego.stock;
+        } else {
+          total += juego.precio * juego.stock;
+        }
       });
       return total;
     },
@@ -67,14 +73,23 @@ const store = new Vuex.Store({
         }
       });
       let filteredByName = filteredBySale.filter((juego) => {
-        return juego.nombre.includes(state.filtros.textoBuscado);
+        return juego.nombre
+          .toLowerCase()
+          .includes(state.filtros.textoBuscado.toLowerCase());
       });
       return filteredByName;
+    },
+    preciosConOferta(state) {
+      let precios = state.juegos.map((juego) => {
+        return juego.precio - (juego.monto_oferta * juego.precio) / 100;
+      });
+      console.log(precios);
+      return precios;
     },
   },
 
   mutations: {
-    ADD_GAMES_TO_STATE: (state, game) => {
+    ADD_GAME_TO_STATE: (state, game) => {
       state.juegos.push(game);
     },
     LOWER_STOCK: (state, index) => {
@@ -123,19 +138,26 @@ const store = new Vuex.Store({
           generos: genres.map((genre) => genre.name),
           imagen: image,
         };
-        context.commit("ADD_GAMES_TO_STATE", simplifiedGame);
+
+        context.commit("ADD_GAME_TO_STATE", simplifiedGame);
       });
     },
-
-    randomNumber(context, { min, max }) {
-      console.log(min, max);
-      let number = Math.floor(Math.random() * max + min);
-      console.log(number);
-      return number;
+    // {nombre, imagen, genero, precio, oferta, montoOferta}
+    AgregarJuego(context, juego) {
+      let found = context.state.juegos.some((juegoEnState) => {
+        return juegoEnState.nombre.toLowerCase() === juego.nombre.toLowerCase();
+      });
+      if (found) {
+        throw `El juego ${juego.nombre} ya existe.`;
+      } else {
+        console.log("Agregando juego", juego.nombre);
+        let id = Math.floor(Math.random() * 999999);
+        let juegoParaAgregar = { ...juego, id: id, stock: 100 };
+        context.commit("ADD_GAME_TO_STATE", juegoParaAgregar);
+        return juegoParaAgregar;
+      }
     },
-
     venderProducto(context, { juego, index }) {
-      console.log("entrando");
       let foundInIndex = context.state.carrito.findIndex((juegoEnCarrito) => {
         return juegoEnCarrito.codigo === juego.codigo;
       });
@@ -146,6 +168,8 @@ const store = new Vuex.Store({
             nombre: juego.nombre,
             precio: juego.precio,
             stock: 1,
+            oferta: juego.oferta,
+            monto_oferta: juego.monto_oferta,
           };
           context.commit("ADD_PRODUCT_TO_CART", gameToAdd);
           context.commit("LOWER_STOCK", index);
@@ -184,6 +208,12 @@ const store = new Vuex.Store({
       context.commit("SET_GENERO", genero);
       context.commit("SET_OFERTA", oferta);
       context.commit("SET_TEXTO", texto);
+    },
+    indexOfGame(context, { id }) {
+      let index = context.state.juegos.findIndex((juego) => {
+        return juego.id === id;
+      });
+      return index;
     },
   },
 });

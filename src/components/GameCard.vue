@@ -9,8 +9,11 @@
         <h3 class="name">{{ game.nombre }}</h3>
         <div class="price-container">
           <div class="prices">
-            <p v-if="game.oferta">Oferta!</p>
-            <h3>${{ precioConOferta }}</h3>
+            <div class="prices-oferta" v-if="game.oferta">
+              <p>Oferta!</p>
+              <h3>${{ $store.getters.preciosConOferta[index] }}</h3>
+            </div>
+            <h3 v-else>${{ game.precio }}</h3>
           </div>
           <div class="cart-button">
             <button @click="venderJuego">
@@ -27,6 +30,7 @@
     name: "GameCard",
     props: {
       game: Object,
+      index: Number,
     },
     data: () => ({
       cantidad: 1,
@@ -60,6 +64,7 @@
     height: 340px;
     background-color: #333333;
     border-radius: 12px;
+    font-size: 0.8em;
   }
   .img {
     background-position: center;

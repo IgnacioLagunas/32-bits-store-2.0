@@ -3,6 +3,7 @@
     <GameCard
       v-for="(game, index) in gameList"
       :key="index"
+      :index="index"
       :game="game"
       @venderJuego="venderProducto(game, index)"
     ></GameCard>
@@ -32,8 +33,9 @@
   .grid {
     display: grid;
     grid-gap: 2em;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     align-items: center;
     transition: all 1s;
+    margin-bottom: 2em;
   }
 </style>

@@ -48,6 +48,10 @@
   body {
     background-color: black;
     color: white;
+    font-size: 20px;
+  }
+  label {
+    font-size: 0.9em;
   }
 
   .container {
