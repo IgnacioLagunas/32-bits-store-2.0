@@ -17,11 +17,16 @@
         >
           Vender
         </button>
-        <i
-          @click="borrarProducto(index)"
-          class="icon far fa-trash-alt"
-          v-if="shoppingCart"
-        ></i>
+        <div v-if="shoppingCart" class="buttons">
+          <div class="add-buttons">
+            <button @click="borrarProducto(index)" class="btn">
+              <i class="icon far fa-minus"></i>
+            </button>
+            <button class="btn" @click="venderProducto(game, index)">
+              <i class="icon far fa-plus"></i>
+            </button>
+          </div>
+        </div>
       </li>
     </div>
   </div>
@@ -96,5 +101,24 @@
   .icon:hover {
     transform: scale(1.1);
     color: #7469ca;
+  }
+
+  .add-buttons input {
+    width: 30px;
+    border: none;
+    margin: 0;
+    color: black;
+  }
+  .add-buttons button {
+    border: none;
+    background-color: var(--primary-color);
+    cursor: pointer;
+  }
+  .add-buttons button .icon {
+    margin: 0;
+    font-size: 0.7em;
+  }
+  .add-buttons button .icon:hover {
+    color: white;
   }
 </style>

@@ -1,60 +1,66 @@
 <template>
   <div>
-    <h1>Busquedas</h1>
-
-    <input
-      type="text"
-      v-model="codigoBuscado"
-      @click="resetBusqueda()"
-    /><button
-      class="btn"
-      @click="buscarJuegoPorCodigo(codigoBuscado, $store.state.juegos)"
-    >
-      Buscar
-    </button>
-    <div class="busqueda">
-      <p>Busqueda:</p>
-      <GameList
-        :list="[juegoEncontrado]"
-        :colors="true"
-        v-if="Object.keys(juegoEncontrado).length != 0"
-      ></GameList>
-      <p class="respuesta" v-else>Juego no encontrado.</p>
+    <h1>Buscar</h1>
+    <div class="busquedas">
+      <div class="busqueda-por-nombre">
+        <input type="text" v-model="textoBuscado" />
+        <button class="btn" @click="filterGames()">
+          Buscar
+        </button>
+      </div>
+      <div class="generos">
+        <label for="generos">Generos</label>
+        <select
+          class="selects"
+          id="generos"
+          v-model="genero"
+          @change="filterGames()"
+        >
+          <option value="">All</option>
+          <option
+            v-for="(genero, index) in $store.getters.allGenres"
+            :key="index"
+            :value="genero"
+            >{{ genero }}</option
+          >
+        </select>
+      </div>
+      <div class="oferta">
+        Oferta<input
+          class="selects"
+          type="checkbox"
+          v-model="oferta"
+          @change="filterGames()"
+        />
+      </div>
     </div>
-    <p>Total de juegos con stock: {{ $store.getters.cantidadDeJuegos }}</p>
-    <p>Total stock: {{ $store.getters.totalStock }}</p>
-
-    <GameList :list="$store.state.juegos" :colors="true"></GameList>
+    <GameGrid
+      class="gameGrid"
+      :gameList="$store.getters.filteredGames"
+    ></GameGrid>
   </div>
 </template>
 
 <script>
-  import GameList from "@/components/GameList";
+  import GameGrid from "@/components/GameGrid";
 
   export default {
+    name: "Busquedas",
     components: {
-      GameList,
+      GameGrid,
     },
     data: () => ({
-      codigoBuscado: "",
-      juegoEncontrado: {},
+      textoBuscado: "",
+      genero: "",
+      oferta: false,
+      foundGames: [],
     }),
     methods: {
-      async buscarJuegoPorCodigo(codigo) {
-        let fixedCodigo = this.ajustarCodigo(codigo);
-        this.codigoBuscado = fixedCodigo;
-        let resp = await this.$store.dispatch("juegoPorCodigo", fixedCodigo);
-        this.juegoEncontrado = resp;
-      },
-      ajustarCodigo(codigo) {
-        let codigoLength = codigo.length;
-        if (codigoLength <= 3) {
-          codigo = `${"0".repeat(4 - codigoLength)}${codigo}`;
-        }
-        return codigo;
-      },
-      resetBusqueda() {
-        this.codigoBuscado = "";
+      filterGames() {
+        let genero = this.genero;
+        let oferta = this.oferta;
+        let texto = this.textoBuscado;
+        this.$store.dispatch("setFilters", { genero, oferta, texto });
       },
     },
   };
@@ -64,7 +70,15 @@
   .busqueda p {
     margin-top: 2em;
   }
-  .busqueda .respuesta {
-    margin: 1em 0;
+  .busquedas div {
+    margin-bottom: 1em;
+  }
+  .selects {
+    margin-left: 1em;
+  }
+
+  .gameGrid {
+    transition: all 0.5s;
+    margin-top: 2em;
   }
 </style>

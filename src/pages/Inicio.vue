@@ -4,14 +4,16 @@
       <h1>32<span>_Bits Store</span></h1>
       <h2>Juegos de PC y Consolas</h2>
     </div>
-    <GameCard></GameCard>
+
+    <GameGrid :gameList="$store.state.juegos"></GameGrid>
   </div>
 </template>
 <script>
-  import GameCard from "@/components/GameCard.vue";
+  import GameGrid from "@/components/GameGrid.vue";
+  // import Busquedas from "@/pages/Busquedas.vue";
   export default {
     components: {
-      GameCard,
+      GameGrid,
     },
   };
 </script>
@@ -26,7 +28,7 @@
     margin-bottom: 0px;
   }
   .logo span {
-    color: #333333;
+    color: white;
     font-weight: 300;
   }
   .logo h2 {

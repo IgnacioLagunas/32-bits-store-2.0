@@ -19,7 +19,7 @@
     }),
     async beforeMount() {
       let res = await fetch(
-        `https://api.rawg.io/api/games?key=${this.API_KEY}`
+        `https://api.rawg.io/api/games?key=${this.API_KEY}&page_size=30`
       );
       let data = await res.json();
       this.$store.dispatch("getGames", data.results);
@@ -44,6 +44,10 @@
     margin: 0;
     box-sizing: border-box;
     font-family: "Roboto", sans-serif;
+  }
+  body {
+    background-color: black;
+    color: white;
   }
 
   .container {

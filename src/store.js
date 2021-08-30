@@ -6,17 +6,12 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
     carrito: [],
-    filters: {},
-    juegos: [
-      // {
-      //   codigo: "0001",
-      //   nombre: "Sekiro",
-      //   stock: 100,
-      //   precio: 30000,
-      //   color: "#ef476f",
-      //   destacado: true,
-      // },
-    ],
+    filtros: {
+      genero: "",
+      oferta: false,
+      textoBuscado: "",
+    },
+    juegos: [],
   },
   getters: {
     cantidadDeJuegos(state) {
@@ -39,10 +34,42 @@ const store = new Vuex.Store({
       });
       return total;
     },
-    juegoPorCodigo(state, codigo) {
-      return state.juegos.find((juego) => {
-        juego.codigo === codigo;
+    allGenres(state) {
+      let allGenres = [];
+      state.juegos.forEach((juego) => {
+        juego.generos.forEach((genero) => {
+          if (!allGenres.includes(genero)) {
+            allGenres = allGenres.concat(genero);
+          }
+        });
       });
+      return allGenres;
+    },
+    filteredGames(state) {
+      let generoBuscado = state.filtros.genero;
+      let filteredByGenre = state.juegos.filter((juego) => {
+        if (generoBuscado === "") {
+          return juego;
+        } else {
+          if (
+            juego.generos.some((genero) => {
+              return genero === generoBuscado;
+            })
+          )
+            return juego;
+        }
+      });
+      let filteredBySale = filteredByGenre.filter((juego) => {
+        if (state.filtros.oferta) {
+          return juego.oferta == true;
+        } else {
+          return juego;
+        }
+      });
+      let filteredByName = filteredBySale.filter((juego) => {
+        return juego.nombre.includes(state.filtros.textoBuscado);
+      });
+      return filteredByName;
     },
   },
 
@@ -68,21 +95,30 @@ const store = new Vuex.Store({
     INCREASE_PRODUCT_STOCK: (state, index) => {
       state.juegos[index].stock += 1;
     },
+    SET_GENERO: (state, genero) => {
+      state.filtros.genero = genero;
+    },
+    SET_OFERTA: (state, oferta) => {
+      state.filtros.oferta = oferta;
+    },
+    SET_TEXTO: (state, texto) => {
+      state.filtros.textoBuscado = texto;
+    },
   },
 
   actions: {
     getGames(context, games) {
-      // let simplifiedGames =
       games.map((game) => {
         let randomPrice = Math.floor(Math.random() * (50000 - 15000)) + 15000;
         let randomSale = Math.floor(Math.random() * (60 - 10)) + 10;
+        let oferta = Math.random() >= 0.5;
         let { name, genres, background_image: image, id } = game;
         let simplifiedGame = {
           codigo: id,
           nombre: name,
           stock: 100,
-          precio: randomPrice,
-          oferta: Math.random() >= 0.5,
+          precio: randomPrice - (randomPrice % 500),
+          oferta: oferta,
           monto_oferta: randomSale - (randomSale % 10),
           generos: genres.map((genre) => genre.name),
           imagen: image,
@@ -99,6 +135,7 @@ const store = new Vuex.Store({
     },
 
     venderProducto(context, { juego, index }) {
+      console.log("entrando");
       let foundInIndex = context.state.carrito.findIndex((juegoEnCarrito) => {
         return juegoEnCarrito.codigo === juego.codigo;
       });
@@ -110,8 +147,8 @@ const store = new Vuex.Store({
             precio: juego.precio,
             stock: 1,
           };
-          context.commit("LOWER_STOCK", index);
           context.commit("ADD_PRODUCT_TO_CART", gameToAdd);
+          context.commit("LOWER_STOCK", index);
         } else {
           context.commit("LOWER_STOCK", index);
           context.commit("INCREASE_CART_QTTY", foundInIndex);
@@ -142,14 +179,11 @@ const store = new Vuex.Store({
       // Reponer el stock al eliminar productos del carrito.
       context.commit("INCREASE_PRODUCT_STOCK", foundInIndex);
     },
-    juegoPorCodigo(context, codigo) {
-      let juegoEncontrado = context.state.juegos.find((juego) => {
-        return juego.codigo === codigo;
-      });
-      if (juegoEncontrado === undefined) {
-        juegoEncontrado = {};
-      }
-      return juegoEncontrado;
+    setFilters(context, { genero, oferta, texto }) {
+      console.log(genero);
+      context.commit("SET_GENERO", genero);
+      context.commit("SET_OFERTA", oferta);
+      context.commit("SET_TEXTO", texto);
     },
   },
 });

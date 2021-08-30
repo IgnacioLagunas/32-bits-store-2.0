@@ -1,12 +1,5 @@
 <template>
   <div>
-    <h1>Ventas</h1>
-    <p>Total de juegos con stock: {{ $store.getters.cantidadDeJuegos }}</p>
-    <GameList
-      :list="$store.state.juegos"
-      :sellingPoint="true"
-      :colors="true"
-    ></GameList>
     <h1>Carrito de compras</h1>
 
     <GameList
